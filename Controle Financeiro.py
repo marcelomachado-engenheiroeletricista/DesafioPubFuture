@@ -1,15 +1,20 @@
-import pymongo # Biblioteca do banco de dados
 
-cluster = pymongo.MongoClient("mongodb+srv://DB_PubFuture:Pub_1234@cluster0.1sf5y.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")  ## Conecta ao banco de dados
-## DB_PubFuture - Pub_1234
+''' Ao reler o desafio, percebi que estava sendo solicitado banco de dados relacional porém havia entendido que
+estava sendo solicitado DB Não-Relacional (erro de interpretação), assim o código teve que ser reiniciado'''
 
-db = cluster.get_database('PubFuture')
-collection_con = db.get_collection('Contas')                # Conecta ao DB de contas
-collection_des = db.get_collection('Despesas')             # Conecta ao DB de despesas
-collection_rec = db.get_collection('Receitas')             # Conecta ao DB de receitas
+import pyodbc # Biblioteca do banco de dados SQl
 
+dados_conexao = (
+    "Driver={SQL Server};"
+    "Server=LAPTOP-B00KFP26;"
+    "Database=PubFuture;"
+)
 
-def Cad_Rec():                                             # Irá Cadastrar uma nova receita
+conexao = pyodbc.connect(dados_conexao)
+
+cursor = conexao.cursor()
+
+'''def Cad_Rec():                                             # Irá Cadastrar uma nova receita
     rv = float(input('Valor R$: '))
     rdr = input('Data do recebimento: ')
     rd = str(input('Descrição: '))
@@ -24,11 +29,11 @@ def Cad_Rec():                                             # Irá Cadastrar uma 
     }
     collection_rec.insert_one(Receita)
 
-    '''rv = valor
+    rv = valor
     rdr = dataRecebimento
     rd = descrição
     rc = conta
-    rt = tipoReceita (salário, presente, prêmio, outros)'''
+    rt = tipoReceita (salário, presente, prêmio, outros)
 
 
 def Cad_Des():                                             # Irá Cadastrar uma nova despesa
@@ -46,12 +51,22 @@ def Cad_Des():                                             # Irá Cadastrar uma 
     }
     collection_des.insert_one(Despesa)
 
-    '''dv = valor
+    dv = valor
     ddr = data do Recebimento
     dd = descrição
     dc = conta
-    dt = tipo da Despesa (salário, presente, prêmio, outros)'''
+    dt = tipo da Despesa (salário, presente, prêmio, outros
 
-
-Cad_Des()
-Cad_Rec()
+        rvalor decimal(10, 2),
+        rdata date,
+        rdescrição varchar(50),
+        rconta varchar(50),
+        rtipo varchar(50),
+        dvalor decimal(10, 2),
+        ddata date,
+        ddescrição varchar(50),
+        dconta varchar(50),
+        dtipo varchar(50),
+		csaldo decimal(10, 2),
+		ctipo varchar(50),
+		cintf varchar(50)'''
