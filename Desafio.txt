@@ -38,7 +38,8 @@ Remover conta
 Listar contas
 Transferir saldo entre contas
 Listar saldo total
-As receitas devem conter as seguintes informações:
+
+A receitas devem conter as seguintes informações:
 
 valor
 dataRecebimento
