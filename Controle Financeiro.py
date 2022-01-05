@@ -20,6 +20,32 @@ cursor = conexao.cursor()
 
 ################ Funções ###################
 
+
+# Funções referentes as Receitas
+
+def Receitas():
+    exeR = input('Nova => (N) \n'
+                 'Editar=> (E) \n'
+                 'Remover => (R) \n'
+                 'Listar => (L) \n'
+                 'Voltar => (V) \n'
+                 'Sair => (S) \n'
+                 'Digite a opção que deseja executar conforme acima: ').upper()
+    while True:
+        if exeR == 'N':
+            Cad_Rec()
+        elif exeR == 'E':
+            Ed_Rec()
+        elif exeR == 'R':
+            Rem_Rec()
+        elif exeR == 'V':
+            v = 'Voltar' #Fazer função
+        elif exeR == 'S':
+            break
+        else:
+            exeR = input('Inválido, tente navamente: ').upper()
+
+
 def Cad_Rec():                                             # Irá Cadastrar uma nova receita
     print('Digite a Receita')
     rv = float(input('Valor R$: '))
@@ -34,6 +60,47 @@ def Cad_Rec():                                             # Irá Cadastrar uma 
     cursor.execute(comando)
     cursor.commit()
     # Não esquecer de atualizar saldo
+
+
+def Ed_Rec():                                             # Irá Editar uma receita
+    a = 'ok'
+
+
+def Rem_Rec():                                             # Irá Remover uma receita
+    a = 'ok'
+
+
+def Lis_Rec():                                             # Irá Listar as receitas
+    a = 'ok'
+
+
+# Funções referentes as Despesas
+
+
+def Despesas():
+    exeD = input('Nova => (N) \n'
+                 'Editar=> (E) \n'
+                 'Remover => (R) \n'
+                 'Listar => (L) \n'
+                 'Voltar => (V) \n'
+                 'Sair => (S) \n'
+                 'Digite a opção que deseja executar conforme acima: ').upper()
+    while True:
+        if exeD == 'N':
+            Cad_Des()
+        elif exeD == 'E':
+            Ed_Des()
+        elif exeD == 'R':
+            Rem_Des()
+        elif exeD == 'L':
+            Lis_Des()
+        elif exeD == 'V':
+            v = 'Voltar' #Fazer função
+        elif exeD == 'S':
+            break
+        else:
+            exeD = input('Inválido, tente navamente: ').upper()
+
 
 def Cad_Des():                                             # Irá Cadastrar uma nova despesa
     print('Digite a Despesa')
@@ -50,6 +117,52 @@ def Cad_Des():                                             # Irá Cadastrar uma 
     cursor.commit()
     #Não esquecer de atualizar saldo
 
+
+def Ed_Des():                                             # Irá Editar uma Despesa
+    a = 'ok'
+
+
+def Rem_Des():                                             # Irá Remover uma Despesa
+    a = 'ok'
+
+
+def Lis_Des():                                             # Irá Listar as Despesa
+    a = 'ok'
+
+
+
+# Funções referentes as Contas
+
+def Contas():
+    exeC = input('Nova => (N) \n'
+                 'Editar=> (E) \n'
+                 'Remover => (R) \n'
+                 'Listar => (L) \n'
+                 'Transferir => (T) \n'
+                 'Listar Saldos=> (LS) \n'
+                 'Voltar => (V) \n'
+                 'Sair => (S) \n'
+                 'Digite a opção que deseja executar conforme acima: ').upper()
+    while True:
+        if exeC == 'N':
+            Cad_Con()
+        elif exeC == 'E':
+            Ed_Con()
+        elif exeC == 'R':
+            Rem_Con()
+        elif exeC == 'L':
+            Lis_Con()
+        elif exeC == 'T':
+            Tra_Con()
+        elif exeC == 'LS':
+            Lit_Con()
+        elif exeC == 'V':
+            v = 'Voltar' #Fazer função
+        elif exeC == 'S':
+            break
+        else:
+            exeC = input('Inválido, tente navamente: ').upper()
+
 def Cad_Con():                                             # Irá Cadastrar uma nova despesa
     print('Digite os dados de sua Conta')
     csaldo = float(input('Valor R$: '))
@@ -62,13 +175,48 @@ def Cad_Con():                                             # Irá Cadastrar uma 
     cursor.execute(comando)
     cursor.commit()
 
+
+def Ed_Con():                                             # Irá Editar uma Despesa
+    a = 'ok'
+
+
+def Rem_Con():                                             # Irá Remover uma Despesa
+    a = 'ok'
+
+
+def Lis_Con():                                             # Irá Listar as Despesa
+    a = 'ok'
+
+
+def Tra_Con():                                             # Irá Editar uma Despesa
+    a = 'ok'
+
+
+def Lit_Con():                                             # Irá Remover uma Despesa
+    a = 'ok'
+
+
 ############################################
 
 
 ################## MAIN ####################
 
-Cad_Rec()
-Cad_Des()
-Cad_Con()
+
+exe1 = input('Contas => (C) \n'
+             'Receitas => (R) \n'
+             'Despesas => (D) \n'
+             'Sair => (S) \n'
+             'Digite a opção que deseja executar conforme acima: ').upper()
+while True:
+    if exe1 == 'C':
+        Contas()
+    elif exe1 == 'R':
+        Receitas()
+    elif exe1 == 'D':
+        Despesas()
+    elif exe1 == 'S':
+        break
+    else:
+        exe1 = input('Inválido, tente navamente: ').upper()
 
 ############################################
