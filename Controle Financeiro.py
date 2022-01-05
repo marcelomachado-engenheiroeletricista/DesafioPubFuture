@@ -81,18 +81,16 @@ def Cad_Rec():                                             # Irá Cadastrar uma 
 
 
 def Ed_Rec():                                             # Editar as receitas
-    '''conexao = pyodbc.connect(dados_conexao)
-    cursor = conexao.cursor()
-    Rec = """SELECT * FROM RECEITAS"""
+    Rec = """SELECT * FROM receitas"""
     listar = pd.read_sql_query(Rec, conexao)
-    esc = str(input('Digite a despesa a ser removida: ')).upper()
-    editar = f"""UPDATE DESPESAS SET ddescrição='{esc}' WHERE ddescrição='nubanK'"""
-    esc1 = str(input('Digite a despesa a editada: ')).upper()
-    esc2 = input('Digite o campo que a editado: ')
-    esc3 = input('Digite o o novo valor: ')
-    escolher = f"""UPDATE DESPESAS SET {esc2}={esc3} WHERE {ddescrição}='{esc2}'"""
-    print(escolher)
-    cursor.execute(escolher)'''
+    print(listar)
+    esc1 = int(input('Digite o id da receita a ser editada: '))
+    esc2 = str(input('Digite o campo que deseja editar: ')).lower()
+    esc3 = input('Digite o novo valor: ')
+    comando = f"""UPDATE receitas SET {esc2}={esc3} WHERE id={esc1}"""
+    cursor.execute(comando)
+    cursor.commit()
+    Inicial()
 
 
 def Rem_Rec():                                             # Remover receitas
@@ -178,8 +176,17 @@ def Cad_Des():                                             # Irá Cadastrar uma 
     #Não esquecer de atualizar saldo
 
 
-def Ed_Des():                                             # Irá Editar uma Despesa
-    a = 'ok'
+def Ed_Des():                                             # Editar  Despesas
+    Des = """SELECT * FROM despesas"""
+    listar = pd.read_sql_query(Des, conexao)
+    print(listar)
+    esc1 = int(input('Digite o id da despesa ser editada: '))
+    esc2 = str(input('Digite o campo que deseja editar: ')).lower()
+    esc3 = input('Digite o novo valor: ')
+    comando = f"""UPDATE despesas SET {esc2}={esc3} WHERE id='{esc1}'"""
+    cursor.execute(comando)
+    cursor.commit()
+    Inicial()
 
 
 def Rem_Des():                                             # Remover Despesas
@@ -264,7 +271,16 @@ def Cad_Con():                                             # Irá Cadastrar uma 
 
 
 def Ed_Con():                                             # Irá Editar uma Despesa
-    a = 'ok'
+    Con = """SELECT * FROM contas"""
+    listar = pd.read_sql_query(Con, conexao)
+    print(listar)
+    esc1 = int(input('Digite o id da conta a ser editada: '))
+    esc2 = str(input('Digite o campo que deseja editar: ')).lower()
+    esc3 = input('Digite o novo valor: ')
+    comando = f"""UPDATE contas SET {esc2}={esc3} WHERE id='{esc1}'"""
+    cursor.execute(comando)
+    cursor.commit()
+    Inicial()
 
 
 def Rem_Con():                                             # Remover Contas
@@ -316,11 +332,6 @@ def Lit_Con():                                             # Irá Remover uma De
 
 
 Inicial()
-
-'''Des = """SELECT * FROM DESPESAS"""
-listar = pd.read_sql_query(Des, conexao)
-print(listar)'''
-
 
 
 #UPDATE estudantes SET nome = 'Rafael Rodrigues Maia' WHERE id = 23;
