@@ -1,3 +1,4 @@
 USE PubFuture
 
-SELECT * FROM R
+SELECT * FROM RECEITAS
+
