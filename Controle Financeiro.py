@@ -112,6 +112,19 @@ def Rem_Rec():                                             # Remover receitas
                       'Sair => (S) \n'
                       'Digite uma opção acima: ').upper()
         if exeRR == 'T':
+            Rec = """SELECT * FROM receitas"""
+            listar = pd.read_sql_query(Rec, conexao)
+            for a in range(0, (listar['id'].count())):
+                varid = listar.loc[a]
+                varval = pd.Series(varid["rvalor"])
+                varif = pd.Series(varid["rintf"])
+                vartc = pd.Series(varid["rtconta"])
+                Con = f"""SELECT * FROM contas WHERE ctipo = '{vartc[0]}' AND cintf = '{varif[0]}'"""
+                ConRead = pd.read_sql_query(Con, conexao)
+                rvs = pd.Series(ConRead["csaldo"]) - varval[0]
+                comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{varif[0]}' AND ctipo='{vartc[0]}'"""  # Atualiza o saldo
+                cursor.execute(comando)
+                cursor.commit()
             Rem_Rec_SQL = """DELETE FROM receitas"""
             cursor.execute(Rem_Rec_SQL)
             cursor.commit()
@@ -245,6 +258,19 @@ def Rem_Des():                                             # Remover Despesas
                   'Digite uma opção acima: ').upper()
 
     if exeRD == 'T':
+        Des = """SELECT * FROM despesas"""
+        listar = pd.read_sql_query(Des, conexao)
+        for a in range(0, (listar['id'].count())):
+            varid = listar.loc[a]
+            varval = pd.Series(varid["dvalor"])
+            varif = pd.Series(varid["dintf"])
+            vartc = pd.Series(varid["dtconta"])
+            Con = f"""SELECT * FROM contas WHERE ctipo = '{vartc[0]}' AND cintf = '{varif[0]}'"""
+            ConRead = pd.read_sql_query(Con, conexao)
+            rvs = pd.Series(ConRead["csaldo"]) + varval[0]
+            comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{varif[0]}' AND ctipo='{vartc[0]}'"""  # Atualiza o saldo
+            cursor.execute(comando)
+            cursor.commit()
         Rem_Des_SQL = """DELETE FROM despesas"""
         cursor.execute(Rem_Des_SQL)
         cursor.commit()
@@ -416,80 +442,7 @@ def Lit_Con():                                             # Irá Remover uma De
 
 ################## MAIN ####################
 
-#Inicial()
-
-'''Con = f"""SELECT * FROM contas WHERE ctipo = 'POU' AND cintf = 'NUB'"""
-ConRead = pd.read_sql_query(Con, conexao)
-rvs = pd.Series(ConRead["csaldo"]) + rv
-comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{ri}' AND ctipo='{rc}'"""        #Atualiza o saldo
-cursor.execute(comando)
-cursor.commit()
-'''
-'''
-Rec = """SELECT * FROM receitas"""
-listar = pd.read_sql_query(Rec, conexao)
-sumr = (listar["rvalor"]).sum()
-
-Rem_Rec_SQL = """DELETE FROM receitas"""
-cursor.execute(Rem_Rec_SQL)
-cursor.commit()
 Inicial()
-
-Con = f"""SELECT * FROM contas WHERE ctipo = 'POU' AND cintf = 'NUB'"""
-    ConRead = pd.read_sql_query(Con, conexao)
-    rvs = pd.Series(ConRead["csaldo"]) - dv
-    comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{di}' AND ctipo='{dc}'"""        #Atualiza o saldo
-    cursor.execute(comando)
-    cursor.commit()
-
-
-
-comando = f"""INSERT INTO despesas(dvalor, ddata, ddescrição, dtipo, dintf, dtconta)
-    VALUES
-        ({dv}, '{ddr}', '{dd}', '{dt}', '{dt}', {di}, {dc})"""
-    cursor.execute(comando)
-    cursor.commit()
-    Con = f"""SELECT * FROM contas WHERE ctipo = 'POU' AND cintf = 'NUB'"""
-    ConRead = pd.read_sql_query(Con, conexao)
-    rvs = pd.Series(ConRead["csaldo"]) - dv
-    comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{di}' AND ctipo='{dc}'"""        #Atualiza o saldo
-    cursor.execute(comando)
-    cursor.commit()
-
-
-
-Rec = """SELECT * FROM receitas"""
-listar = pd.read_sql_query(Rec, conexao)
-print(listar)
-esc = int(input('Digite o id da receita a ser removida: '))
-escolher = f"""DELETE FROM receitas WHERE id = {esc}"""
-cursor.execute(escolher)
-cursor.commit()
-varid = listar.query(f'id == {esc}')
-vari = listar.query(f'id == 8')
-varval = pd.Series(varid["rvalor"])
-varif = pd.Series(varid["rintf"])
-vartc = pd.Series(varid["rtconta"])
-et = varid.index
-Con = f"""SELECT * FROM contas WHERE ctipo = '{vartc[et[0]]}' AND cintf = '{varif[et[0]]}'"""
-ConRead = pd.read_sql_query(Con, conexao)
-rvs = pd.Series(ConRead["csaldo"]) - varval[et[0]]
-comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{varif[et[0]]}' AND ctipo='{vartc[et[0]]}'"""        #Atualiza o saldo
-cursor.execute(comando)
-cursor.commit()'''
-
-
-#Inicial()
-
-
-
-
-
-
-
-
-
-#UPDATE estudantes SET nome = 'Rafael Rodrigues Maia' WHERE id = 23;
 
 ############################################
 
