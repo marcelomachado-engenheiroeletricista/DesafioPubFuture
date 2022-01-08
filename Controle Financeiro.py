@@ -74,11 +74,12 @@ def Cad_Rec():                                             # Irá Cadastrar uma 
     rv = float(input('Valor R$: '))
     rdr = input('Data do recebimento: ')
     rd = str(input('Descrição: ').upper())
-    rc = str(input('Conta: ').upper())
     rt = str(input('Tipo de Receita: ').upper())
-    comando = f"""INSERT INTO receitas(rvalor, rdata, rdescrição, rconta, rtipo)
+    ri = str(input('Instituição financeira: ').upper())
+    rc = str(input('Tipo de conta: ').upper())
+    comando = f"""INSERT INTO receitas(rvalor, rdata, rdescrição, rtipo, rintf, rtconta)
     VALUES
-        ({rv}, '{rdr}', '{rd}', '{rc}', '{rt}')"""
+        ({rv}, '{rdr}', '{rd}', '{rt}', '{ri}', {rc})"""
     cursor.execute(comando)
     cursor.commit()
     Inicial()
@@ -192,11 +193,13 @@ def Cad_Des():                                             # Irá Cadastrar uma 
     dv = float(input('Valor R$: '))
     ddr = input('Data do Pagamento: ')
     dd = str(input('Descrição: ').upper())
-    dc = str(input('Conta: ').upper())
     dt = str(input('Tipo de Despesa: ').upper())
-    comando = f"""INSERT INTO despesas(dvalor, ddata, ddescrição, dconta, dtipo)
+    di = str(input('Instituição financeira: ').upper())
+    dc = str(input('Tipo de conta: ').upper())
+
+    comando = f"""INSERT INTO despesas(dvalor, ddata, ddescrição, dtipo, dintf, dtconta)
     VALUES
-        ({dv}, '{ddr}', '{dd}', '{dc}', '{dt}')"""
+        ({dv}, '{ddr}', '{dd}', '{dt}', '{dt}', {di}, {dc})"""
     cursor.execute(comando)
     cursor.commit()
     Inicial()
