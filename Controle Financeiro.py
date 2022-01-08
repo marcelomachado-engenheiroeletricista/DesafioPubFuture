@@ -79,7 +79,7 @@ def Cad_Rec():                                             # Irá Cadastrar uma 
     rc = str(input('Tipo de conta: ').upper())
     comando = f"""INSERT INTO receitas(rvalor, rdata, rdescrição, rtipo, rintf, rtconta)
     VALUES
-        ({rv}, '{rdr}', '{rd}', '{rt}', '{ri}', {rc})"""
+        ({rv}, '{rdr}', '{rd}', '{rt}', '{ri}', '{rc}')"""
     cursor.execute(comando)
     cursor.commit()
     Con = f"""SELECT * FROM contas WHERE ctipo = 'POU' AND cintf = 'NUB'"""
@@ -117,17 +117,25 @@ def Rem_Rec():                                             # Remover receitas
             cursor.commit()
             Inicial()
         elif exeRR == 'E':
-            conexao = pyodbc.connect(dados_conexao)
-            cursor = conexao.cursor()
             Rec = """SELECT * FROM receitas"""
             listar = pd.read_sql_query(Rec, conexao)
             print(listar)
             esc = int(input('Digite o id da receita a ser removida: '))
-            escolher = f"""DELETE FROM receitas WHERE id = ''"""
+            escolher = f"""DELETE FROM receitas WHERE id = {esc}"""
             cursor.execute(escolher)
             cursor.commit()
+            varid = listar.query(f'id == {esc}')
+            varval = pd.Series(varid["rvalor"])
+            varif = pd.Series(varid["rintf"])
+            vartc = pd.Series(varid["rtconta"])
+            ind = varid.index
+            Con = f"""SELECT * FROM contas WHERE ctipo = '{vartc[ind[0]]}' AND cintf = '{varif[ind[0]]}'"""
+            ConRead = pd.read_sql_query(Con, conexao)
+            rvs = pd.Series(ConRead["csaldo"]) - varval[ind[0]]
+            comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{varif[ind[0]]}' AND ctipo='{vartc[ind[0]]}'"""  # Atualiza o saldo
+            cursor.execute(comando)
+            cursor.commit()
             Inicial()
-        #NÃO ESQUECER DE ATUALIZAR O SALDO
         elif exeRR == 'V':
             Receitas()
         elif exeRR == 'S':
@@ -249,8 +257,18 @@ def Rem_Des():                                             # Remover Despesas
         escolher = f"""DELETE FROM DESPESAS WHERE id = {esc}"""
         cursor.execute(escolher)
         cursor.commit()
+        varid = listar.query(f'id == {esc}')
+        varval = pd.Series(varid["dvalor"])
+        varif = pd.Series(varid["dintf"])
+        vartc = pd.Series(varid["dtconta"])
+        ind = varid.index
+        Con = f"""SELECT * FROM contas WHERE ctipo = '{vartc[ind[0]]}' AND cintf = '{varif[ind[0]]}'"""
+        ConRead = pd.read_sql_query(Con, conexao)
+        rvs = pd.Series(ConRead["csaldo"]) + varval[ind[0]]
+        comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{varif[ind[0]]}' AND ctipo='{vartc[ind[0]]}'"""  # Atualiza o saldo
+        cursor.execute(comando)
+        cursor.commit()
         Inicial()
-        # NÃO ESQUECER DE ATUALIZAR O SALDO
     elif exeRD == 'V':
         Despesas()
     elif exeRD == 'S':
@@ -398,10 +416,76 @@ def Lit_Con():                                             # Irá Remover uma De
 
 ################## MAIN ####################
 
+#Inicial()
 
+'''Con = f"""SELECT * FROM contas WHERE ctipo = 'POU' AND cintf = 'NUB'"""
+ConRead = pd.read_sql_query(Con, conexao)
+rvs = pd.Series(ConRead["csaldo"]) + rv
+comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{ri}' AND ctipo='{rc}'"""        #Atualiza o saldo
+cursor.execute(comando)
+cursor.commit()
+'''
+'''
+Rec = """SELECT * FROM receitas"""
+listar = pd.read_sql_query(Rec, conexao)
+sumr = (listar["rvalor"]).sum()
 
-
+Rem_Rec_SQL = """DELETE FROM receitas"""
+cursor.execute(Rem_Rec_SQL)
+cursor.commit()
 Inicial()
+
+Con = f"""SELECT * FROM contas WHERE ctipo = 'POU' AND cintf = 'NUB'"""
+    ConRead = pd.read_sql_query(Con, conexao)
+    rvs = pd.Series(ConRead["csaldo"]) - dv
+    comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{di}' AND ctipo='{dc}'"""        #Atualiza o saldo
+    cursor.execute(comando)
+    cursor.commit()
+
+
+
+comando = f"""INSERT INTO despesas(dvalor, ddata, ddescrição, dtipo, dintf, dtconta)
+    VALUES
+        ({dv}, '{ddr}', '{dd}', '{dt}', '{dt}', {di}, {dc})"""
+    cursor.execute(comando)
+    cursor.commit()
+    Con = f"""SELECT * FROM contas WHERE ctipo = 'POU' AND cintf = 'NUB'"""
+    ConRead = pd.read_sql_query(Con, conexao)
+    rvs = pd.Series(ConRead["csaldo"]) - dv
+    comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{di}' AND ctipo='{dc}'"""        #Atualiza o saldo
+    cursor.execute(comando)
+    cursor.commit()
+
+
+
+Rec = """SELECT * FROM receitas"""
+listar = pd.read_sql_query(Rec, conexao)
+print(listar)
+esc = int(input('Digite o id da receita a ser removida: '))
+escolher = f"""DELETE FROM receitas WHERE id = {esc}"""
+cursor.execute(escolher)
+cursor.commit()
+varid = listar.query(f'id == {esc}')
+vari = listar.query(f'id == 8')
+varval = pd.Series(varid["rvalor"])
+varif = pd.Series(varid["rintf"])
+vartc = pd.Series(varid["rtconta"])
+et = varid.index
+Con = f"""SELECT * FROM contas WHERE ctipo = '{vartc[et[0]]}' AND cintf = '{varif[et[0]]}'"""
+ConRead = pd.read_sql_query(Con, conexao)
+rvs = pd.Series(ConRead["csaldo"]) - varval[et[0]]
+comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{varif[et[0]]}' AND ctipo='{vartc[et[0]]}'"""        #Atualiza o saldo
+cursor.execute(comando)
+cursor.commit()'''
+
+
+#Inicial()
+
+
+
+
+
+
 
 
 
