@@ -62,7 +62,7 @@ def Receitas():
         elif exeR == 'L':
             Lis_Rec()
         elif exeR == 'V':
-            v = 'Voltar' #Fazer função
+            Inicial()
         elif exeR == 'S':
             exit()
         else:
@@ -150,7 +150,7 @@ def Lis_Rec():                                             # Irá Listar as rece
             print(listar)
             Inicial()
         elif lisR == 'V':
-            v = 'Voltar'  # Fazer função
+            Receitas()
         elif lisR == 'S':
             exit()
         else:
@@ -180,7 +180,7 @@ def Despesas():
         elif exeD == 'L':
             Lis_Des()
         elif exeD == 'V':
-            v = 'Voltar' #Fazer função
+            Inicial()
         elif exeD == 'S':
             exit()
         else:
@@ -266,7 +266,7 @@ def Lis_Des():                                             # Listar as Despesas
             print(listar)
             Inicial()
         elif lisD == 'V':
-            v = 'Voltar'  # Fazer função
+            Despesas()
         elif lisD == 'S':
             exit()
         else:
@@ -301,7 +301,7 @@ def Contas():
         elif exeC == 'LS':
             Lit_Con()
         elif exeC == 'V':
-            v = 'Voltar' #Fazer função
+            Inicial()
         elif exeC == 'S':
             exit()
         else:
