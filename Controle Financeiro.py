@@ -82,8 +82,13 @@ def Cad_Rec():                                             # Irá Cadastrar uma 
         ({rv}, '{rdr}', '{rd}', '{rt}', '{ri}', {rc})"""
     cursor.execute(comando)
     cursor.commit()
+    Con = f"""SELECT * FROM contas WHERE ctipo = 'POU' AND cintf = 'NUB'"""
+    ConRead = pd.read_sql_query(Con, conexao)
+    rvs = pd.Series(ConRead["csaldo"]) + rv
+    comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{ri}' AND ctipo='{rc}'"""        #Atualiza o saldo
+    cursor.execute(comando)
+    cursor.commit()
     Inicial()
-    # Não esquecer de atualizar saldo
 
 
 def Ed_Rec():                                             # Editar as receitas
@@ -202,8 +207,13 @@ def Cad_Des():                                             # Irá Cadastrar uma 
         ({dv}, '{ddr}', '{dd}', '{dt}', '{dt}', {di}, {dc})"""
     cursor.execute(comando)
     cursor.commit()
+    Con = f"""SELECT * FROM contas WHERE ctipo = 'POU' AND cintf = 'NUB'"""
+    ConRead = pd.read_sql_query(Con, conexao)
+    rvs = pd.Series(ConRead["csaldo"]) - dv
+    comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{di}' AND ctipo='{dc}'"""        #Atualiza o saldo
+    cursor.execute(comando)
+    cursor.commit()
     Inicial()
-    #Não esquecer de atualizar saldo
 
 
 def Ed_Des():                                             # Editar  Despesas
@@ -389,7 +399,10 @@ def Lit_Con():                                             # Irá Remover uma De
 ################## MAIN ####################
 
 
+
+
 Inicial()
+
 
 
 #UPDATE estudantes SET nome = 'Rafael Rodrigues Maia' WHERE id = 23;
