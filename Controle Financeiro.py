@@ -171,12 +171,14 @@ def Rem_Rec():                                             # Remover receitas
 
 def Lis_Rec():                                             # Irá Listar as receitas
     while True:
-        lisR = input('Todas (T) \n'
-                     'Por Período (P) \n'
+        lisR = input('Todas (A) \n'
+                     'Filtrar por Período => (P) \n'
+                     'Filtrar por Descrição => (D) \n'
+                     'Filtrar por Tipo => (T) \n'
                      'Voltar => (V) \n'
                      'Sair => (S) \n'
                      'Digite a opção que deseja executar conforme acima: ').upper()
-        if lisR == 'T':
+        if lisR == 'A':
             Rec = """SELECT * FROM receitas"""
             listar = pd.read_sql_query(Rec, conexao)
             print(listar)
@@ -185,6 +187,18 @@ def Lis_Rec():                                             # Irá Listar as rece
             perI = input('Digite o período Inicial no formato 2022-01-01: ')
             perF = input('Digite o período Final formato 2022-01-01: ')
             Rec = f"""SELECT * FROM receitas WHERE rdata > '{perI}' AND rdata < '{perF}'"""
+            listar = pd.read_sql_query(Rec, conexao)
+            print(listar)
+            Inicial()
+        elif lisR == 'D':
+            rdes = input('Digite a descrição: ').upper()
+            Rec = f"""SELECT * FROM receitas WHERE rdescrição = '{rdes}'"""
+            listar = pd.read_sql_query(Rec, conexao)
+            print(listar)
+            Inicial()
+        elif lisR == 'T':
+            rtip = input('Digite o tipo de receita: ').upper()
+            Rec = f"""SELECT * FROM receitas WHERE rtipo = '{rtip}'"""
             listar = pd.read_sql_query(Rec, conexao)
             print(listar)
             Inicial()
@@ -329,12 +343,14 @@ def Rem_Des():                                             # Remover Despesas
 
 def Lis_Des():                                             # Listar as Despesas
     while True:
-        lisD = input('Todas (T) \n'
+        lisD = input('Todas (A) \n'
                      'Por Período (P) \n'
+                     'Filtrar por Descrição => (D) \n'
+                     'Filtrar por Tipo => (T) \n'
                      'Voltar => (V) \n'
                      'Sair => (S) \n'
                      'Digite a opção que deseja executar conforme acima: ').upper()
-        if lisD == 'T':
+        if lisD == 'A':
             Des = """SELECT * FROM despesas"""
             listar = pd.read_sql_query(Des, conexao)
             print(listar)
@@ -343,6 +359,18 @@ def Lis_Des():                                             # Listar as Despesas
             perI = input('Digite o período Inicial no formato 2022-01-01: ')
             perF = input('Digite o período Final no formato 2022-01-01: ')
             Des = f"""SELECT * FROM despesas WHERE ddata > '{perI}' AND ddata < '{perF}' """
+            listar = pd.read_sql_query(Des, conexao)
+            print(listar)
+            Inicial()
+        elif lisD == 'D':
+            ddes = input('Digite a descrição: ').upper()
+            Des = f"""SELECT * FROM receitas WHERE ddescrição = '{ddes}'"""
+            listar = pd.read_sql_query(Des, conexao)
+            print(listar)
+            Inicial()
+        elif lisD == 'T':
+            dtip = input('Digite o tipo de despesa: ').upper()
+            Des = f"""SELECT * FROM receitas WHERE dtipo = '{dtip}'"""
             listar = pd.read_sql_query(Des, conexao)
             print(listar)
             Inicial()
@@ -490,7 +518,6 @@ def Lit_Con():                                             #Apresenta saldo tota
 ################## MAIN ####################
 
 Inicial()
-
 
 ############################################
 
