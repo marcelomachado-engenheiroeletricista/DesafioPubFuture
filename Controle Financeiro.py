@@ -82,7 +82,7 @@ def Cad_Rec():                                             # Irá Cadastrar uma 
         ({rv}, '{rdr}', '{rd}', '{rt}', '{ri}', '{rc}')"""
     cursor.execute(comando)
     cursor.commit()
-    Con = f"""SELECT * FROM contas WHERE ctipo = 'POU' AND cintf = 'NUB'"""
+    Con = f"""SELECT * FROM contas WHERE ctipo = '{rc}' AND cintf = '{ri}'"""
     ConRead = pd.read_sql_query(Con, conexao)
     rvs = pd.Series(ConRead["csaldo"]) + rv
     comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{ri}' AND ctipo='{rc}'"""        #Atualiza o saldo
@@ -228,7 +228,7 @@ def Cad_Des():                                             # Irá Cadastrar uma 
         ({dv}, '{ddr}', '{dd}', '{dt}', '{dt}', {di}, {dc})"""
     cursor.execute(comando)
     cursor.commit()
-    Con = f"""SELECT * FROM contas WHERE ctipo = 'POU' AND cintf = 'NUB'"""
+    Con = f"""SELECT * FROM contas WHERE ctipo = '{dc}' AND cintf = '{di}'"""
     ConRead = pd.read_sql_query(Con, conexao)
     rvs = pd.Series(ConRead["csaldo"]) - dv
     comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{di}' AND ctipo='{dc}'"""        #Atualiza o saldo
@@ -422,18 +422,38 @@ def Rem_Con():                                             # Remover Contas
             exeRD = input('Inválido, tente navamente: ').upper()
 
 
-def Lis_Con():                                             # Irá Listar as Despesa
+def Lis_Con():                                             # Irá Listar as Contas
     Con = """SELECT * FROM contas"""
     listar = pd.read_sql_query(Con, conexao)
     print(listar)
     Inicial()
 
 
-def Tra_Con():                                             # Irá Editar uma Despesa
-    a = 'ok'
+def Tra_Con():                                             # Transferir saldo entre contas
+    Con = f"""SELECT * FROM contas"""
+    ConRead = pd.read_sql_query(Con, conexao)
+    print(ConRead)
+    ctra = float(input('Digite o valor a transferir: '))
+    ctifi = input('Digite a Intituição financeira de origem: ').upper()
+    ctci = input('Digite a conta de origem: ').upper()
+    ctifo = input('Digite a Intituição financeira de destino: ').upper()
+    ctco = input('Digite a conta de destino: ').upper()
+    varifi = ConRead.query(f"""cintf == '{ctifi}' and ctipo == '{ctci}'""")
+    csali = pd.Series(varifi["csaldo"]) - ctra
+    ind = csali.index
+    Con = f"""UPDATE contas SET csaldo={csali[ind[0]]} WHERE cintf='{ctifi}' AND ctipo='{ctci}'"""
+    cursor.execute(Con)
+    cursor.commit()
+    varifo = ConRead.query(f"""cintf == '{ctifo}' and ctipo == '{ctco}'""")
+    csalo = pd.Series(varifo["csaldo"]) + ctra
+    ind = csalo.index
+    Con = f"""UPDATE contas SET csaldo={csalo[ind[0]]} WHERE cintf='{ctifo}' AND ctipo='{ctco}'"""
+    cursor.execute(Con)
+    cursor.commit()
+    Inicial()
 
 
-def Lit_Con():                                             # Irá Remover uma Despesa
+def Lit_Con():                                             #
     a = 'ok'
 
 
