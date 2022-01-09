@@ -101,6 +101,18 @@ def Ed_Rec():                                             # Editar as receitas
     comando = f"""UPDATE receitas SET {esc2}={esc3} WHERE id={esc1}"""
     cursor.execute(comando)
     cursor.commit()
+    if esc2 == 'rvalor':  # Atualizar o saldo somente se editado valor da receita
+        varid = listar.query(f'id == {esc1}')
+        varval = pd.Series(varid["rvalor"])
+        varif = pd.Series(varid["rintf"])
+        vartc = pd.Series(varid["rtconta"])
+        ind = varid.index
+        Con = f"""SELECT * FROM contas WHERE ctipo = '{vartc[ind[0]]}' AND cintf = '{varif[ind[0]]}'"""
+        ConRead = pd.read_sql_query(Con, conexao)
+        rvs = (pd.Series(ConRead["csaldo"]) - varval[ind[0]]) + int(esc3)
+        comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{varif[ind[0]]}' AND ctipo='{vartc[ind[0]]}'"""  # Atualiza o saldo
+        cursor.execute(comando)
+        cursor.commit()
     Inicial()
 
 
@@ -247,6 +259,18 @@ def Ed_Des():                                             # Editar  Despesas
     comando = f"""UPDATE despesas SET {esc2}={esc3} WHERE id='{esc1}'"""
     cursor.execute(comando)
     cursor.commit()
+    if esc2 == 'dvalor':  # Atualizar o saldo somente se editado valor da despesa
+        varid = listar.query(f'id == {esc1}')
+        varval = pd.Series(varid["dvalor"])
+        varif = pd.Series(varid["dintf"])
+        vartc = pd.Series(varid["dtconta"])
+        ind = varid.index
+        Con = f"""SELECT * FROM contas WHERE ctipo = '{vartc[ind[0]]}' AND cintf = '{varif[ind[0]]}'"""
+        ConRead = pd.read_sql_query(Con, conexao)
+        rvs = (pd.Series(ConRead["csaldo"]) + varval[ind[0]]) - int(esc3)
+        comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{varif[ind[0]]}' AND ctipo='{vartc[ind[0]]}'"""  # Atualiza o saldo
+        cursor.execute(comando)
+        cursor.commit()
     Inicial()
 
 
@@ -364,7 +388,7 @@ def Contas():
         else:
             exeC = input('Inválido, tente navamente: ').upper()
 
-def Cad_Con():                                             # Irá Cadastrar uma nova despesa
+def Cad_Con():                                             # Cadastrar Contas
     print('Digite os dados de sua Conta')
     csaldo = float(input('Valor R$: '))
     ctipo = str(input('Tipo de conta: ').upper())
@@ -378,7 +402,7 @@ def Cad_Con():                                             # Irá Cadastrar uma 
     Inicial()
 
 
-def Ed_Con():                                             # Irá Editar uma Despesa
+def Ed_Con():                                             # Editar Contas
     Con = """SELECT * FROM contas"""
     listar = pd.read_sql_query(Con, conexao)
     print(listar)
@@ -466,6 +490,7 @@ def Lit_Con():                                             #Apresenta saldo tota
 ################## MAIN ####################
 
 Inicial()
+
 
 ############################################
 
