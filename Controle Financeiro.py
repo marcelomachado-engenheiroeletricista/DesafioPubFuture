@@ -453,8 +453,11 @@ def Tra_Con():                                             # Transferir saldo en
     Inicial()
 
 
-def Lit_Con():                                             #
-    a = 'ok'
+def Lit_Con():                                             #Apresenta saldo total
+    Con = f"""SELECT SUM(csaldo) from contas"""
+    ConRead = pd.read_sql_query(Con, conexao)
+    csaldo = ConRead.loc[0]
+    print(f'Seu saldo total é de: R$ {csaldo[0]}')
 
 
 ############################################
