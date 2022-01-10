@@ -5,6 +5,8 @@ import pandas as pd         # Biblioteca Pandas p/ ler o banco de dados
 
 ############################################
 
+
+
 ########## Fazer conexão com o DB ##########
 
 dados_conexao = (
@@ -20,9 +22,14 @@ cursor = conexao.cursor()
 
 ################ Funções ###################
 
+# Cabeçalho
 
+def head():
+    print('############################################ / / ############################################')
 
+# Função inicial
 def Inicial():
+    print('\n############################################ Principal ############################################\n')
     exe1 = input('Contas => (C) \n'
                  'Receitas => (R) \n'
                  'Despesas => (D) \n'
@@ -45,6 +52,7 @@ def Inicial():
 # Funções referentes as Receitas
 
 def Receitas():
+    print('\n############################################ Receitas ############################################\n')
     while True:
         exeR = input('Nova => (N) \n'
                      'Editar=> (E) \n'
@@ -70,6 +78,7 @@ def Receitas():
 
 
 def Cad_Rec():                                             # Irá Cadastrar uma nova receita
+    print('\n########################################### Nova Receita ###########################################\n')
     print('Digite a Receita')
     rv = float(input('Valor R$: '))
     rdr = input('Data do recebimento: ')
@@ -92,6 +101,7 @@ def Cad_Rec():                                             # Irá Cadastrar uma 
 
 
 def Ed_Rec():                                             # Editar as receitas
+    print('\n########################################### Editar Receitas ###########################################\n')
     Rec = """SELECT * FROM receitas"""
     listar = pd.read_sql_query(Rec, conexao)
     print(listar)
@@ -117,6 +127,7 @@ def Ed_Rec():                                             # Editar as receitas
 
 
 def Rem_Rec():                                             # Remover receitas
+    print('\n########################################### Remover Receitas ###########################################\n')
     while True:
         exeRR = input('Remover todas => (T) \n'
                       'Especifica => (E) \n' 
@@ -170,6 +181,7 @@ def Rem_Rec():                                             # Remover receitas
 
 
 def Lis_Rec():                                             # Irá Listar as receitas
+    print('\n########################################### Filtrar Receitas ###########################################\n')
     while True:
         lisR = input('Todas (A) \n'
                      'Filtrar por Período => (P) \n'
@@ -215,6 +227,7 @@ def Lis_Rec():                                             # Irá Listar as rece
 
 
 def Despesas():
+    print('\n############################################ Despesas ############################################\n')
     while True:
         exeD = input('Nova => (N) \n'
                      'Editar=> (E) \n'
@@ -241,6 +254,7 @@ def Despesas():
 
 
 def Cad_Des():                                             # Irá Cadastrar uma nova despesa
+    print('\n########################################### Nova Despesa ###########################################\n')
     print('Digite a Despesa')
     dv = float(input('Valor R$: '))
     ddr = input('Data do Pagamento: ')
@@ -264,6 +278,7 @@ def Cad_Des():                                             # Irá Cadastrar uma 
 
 
 def Ed_Des():                                             # Editar  Despesas
+    print('\n########################################### Editar Despesas ###########################################\n')
     Des = """SELECT * FROM despesas"""
     listar = pd.read_sql_query(Des, conexao)
     print(listar)
@@ -289,6 +304,7 @@ def Ed_Des():                                             # Editar  Despesas
 
 
 def Rem_Des():                                             # Remover Despesas
+    print('\n########################################### Remover Despesas ###########################################\n')
     exeRD = input('Remover todas => (T) \n'
                   'Especifica => (E) \n'
                   'Voltar => (V) \n'
@@ -342,6 +358,7 @@ def Rem_Des():                                             # Remover Despesas
 
 
 def Lis_Des():                                             # Listar as Despesas
+    print('\n########################################### Filtrar Despesas ###########################################\n')
     while True:
         lisD = input('Todas (A) \n'
                      'Por Período (P) \n'
@@ -386,6 +403,7 @@ def Lis_Des():                                             # Listar as Despesas
 # Funções referentes as Contas
 
 def Contas():
+    print('\n############################################ Contas ############################################\n')
     while True:
         exeC = input('Nova => (N) \n'
                      'Editar=> (E) \n'
@@ -417,6 +435,7 @@ def Contas():
             exeC = input('Inválido, tente navamente: ').upper()
 
 def Cad_Con():                                             # Cadastrar Contas
+    print('\n########################################### Nova Conta ###########################################\n')
     print('Digite os dados de sua Conta')
     csaldo = float(input('Valor R$: '))
     ctipo = str(input('Tipo de conta: ').upper())
@@ -431,6 +450,7 @@ def Cad_Con():                                             # Cadastrar Contas
 
 
 def Ed_Con():                                             # Editar Contas
+    print('\n########################################### Editar Contas ###########################################\n')
     Con = """SELECT * FROM contas"""
     listar = pd.read_sql_query(Con, conexao)
     print(listar)
@@ -444,6 +464,7 @@ def Ed_Con():                                             # Editar Contas
 
 
 def Rem_Con():                                             # Remover Contas
+    print('\n########################################### Remover Contas ###########################################\n')
     while True:
         exeRC = input('Remover todas => (T) \n'
                       'Especifica => (E) \n'
@@ -475,6 +496,7 @@ def Rem_Con():                                             # Remover Contas
 
 
 def Lis_Con():                                             # Irá Listar as Contas
+    print('\n########################################### Filtrar Contas ###########################################\n')
     Con = """SELECT * FROM contas"""
     listar = pd.read_sql_query(Con, conexao)
     print(listar)
@@ -482,6 +504,7 @@ def Lis_Con():                                             # Irá Listar as Cont
 
 
 def Tra_Con():                                             # Transferir saldo entre contas
+    print('\n####################################### Transferência de Saldo #######################################\n')
     Con = f"""SELECT * FROM contas"""
     ConRead = pd.read_sql_query(Con, conexao)
     print(ConRead)
@@ -502,14 +525,19 @@ def Tra_Con():                                             # Transferir saldo en
     Con = f"""UPDATE contas SET csaldo={csalo[ind[0]]} WHERE cintf='{ctifo}' AND ctipo='{ctco}'"""
     cursor.execute(Con)
     cursor.commit()
+    print('Transferencia finalizada')
     Inicial()
 
 
 def Lit_Con():                                             #Apresenta saldo total
+    print('\n############################################ Saldo ############################################\n')
+
     Con = f"""SELECT SUM(csaldo) from contas"""
     ConRead = pd.read_sql_query(Con, conexao)
     csaldo = ConRead.loc[0]
     print(f'Seu saldo total é de: R$ {csaldo[0]}')
+    Inicial()
+
 
 
 ############################################
