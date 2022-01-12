@@ -2,6 +2,7 @@
 
 import pyodbc               # Biblioteca OBBC para conetar ao banco de dados SQl
 import pandas as pd         # Biblioteca Pandas p/ ler o banco de dados
+from datetime import date
 
 ############################################
 
@@ -22,12 +23,9 @@ cursor = conexao.cursor()
 
 ################ Funções ###################
 
-# Cabeçalho
-
-def head():
-    print('############################################ / / ############################################')
 
 # Função inicial
+
 def Inicial():
     print('\n############################################ Principal ############################################\n')
     exe1 = input('Contas => (C) \n'
@@ -81,7 +79,7 @@ def Cad_Rec():                                             # Irá Cadastrar uma 
     print('\n########################################### Nova Receita ###########################################\n')
     print('Digite a Receita')
     rv = float(input('Valor R$: '))
-    rdr = input('Data do recebimento: ')
+    rdr = input('Data do recebimento no formato 2022-01-31: ')
     rd = str(input('Descrição: ').upper())
     rt = str(input('Tipo de Receita: ').upper())
     ri = str(input('Instituição financeira: ').upper())
@@ -91,12 +89,13 @@ def Cad_Rec():                                             # Irá Cadastrar uma 
         ({rv}, '{rdr}', '{rd}', '{rt}', '{ri}', '{rc}')"""
     cursor.execute(comando)
     cursor.commit()
-    Con = f"""SELECT * FROM contas WHERE ctipo = '{rc}' AND cintf = '{ri}'"""
-    ConRead = pd.read_sql_query(Con, conexao)
-    rvs = pd.Series(ConRead["csaldo"]) + rv
-    comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{ri}' AND ctipo='{rc}'"""        #Atualiza o saldo
-    cursor.execute(comando)
-    cursor.commit()
+    if hoje >= rdr:                                                    #Somente atualiza saldo se data da receita for igual ou inferior a atual
+        Con = f"""SELECT * FROM contas WHERE ctipo = '{rc}' AND cintf = '{ri}'"""
+        ConRead = pd.read_sql_query(Con, conexao)
+        rvs = pd.Series(ConRead["csaldo"]) + rv
+        comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{ri}' AND ctipo='{rc}'"""        #Atualiza o saldo
+        cursor.execute(comando)
+        cursor.commit()
     Inicial()
 
 
@@ -196,8 +195,8 @@ def Lis_Rec():                                             # Irá Listar as rece
             print(listar)
             Inicial()
         elif lisR == 'P':
-            perI = input('Digite o período Inicial no formato 2022-01-01: ')
-            perF = input('Digite o período Final formato 2022-01-01: ')
+            perI = input('Digite o período Inicial no formato 2022-01-31: ')
+            perF = input('Digite o período Final no formato 2022-01-31:: ')
             Rec = f"""SELECT * FROM receitas WHERE rdata > '{perI}' AND rdata < '{perF}'"""
             listar = pd.read_sql_query(Rec, conexao)
             print(listar)
@@ -257,23 +256,23 @@ def Cad_Des():                                             # Irá Cadastrar uma 
     print('\n########################################### Nova Despesa ###########################################\n')
     print('Digite a Despesa')
     dv = float(input('Valor R$: '))
-    ddr = input('Data do Pagamento: ')
+    ddr = input('Data do Pagamento no formato 2022-01-31: ')
     dd = str(input('Descrição: ').upper())
     dt = str(input('Tipo de Despesa: ').upper())
     di = str(input('Instituição financeira: ').upper())
     dc = str(input('Tipo de conta: ').upper())
-
     comando = f"""INSERT INTO despesas(dvalor, ddata, ddescrição, dtipo, dintf, dtconta)
     VALUES
-        ({dv}, '{ddr}', '{dd}', '{dt}', '{dt}', {di}, {dc})"""
+        ({dv}, '{ddr}', '{dd}', '{dt}', '{di}', '{dc}')"""
     cursor.execute(comando)
     cursor.commit()
-    Con = f"""SELECT * FROM contas WHERE ctipo = '{dc}' AND cintf = '{di}'"""
-    ConRead = pd.read_sql_query(Con, conexao)
-    rvs = pd.Series(ConRead["csaldo"]) - dv
-    comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{di}' AND ctipo='{dc}'"""        #Atualiza o saldo
-    cursor.execute(comando)
-    cursor.commit()
+    if hoje >= ddr:                            # Somente atualiza saldo se data da despesa for igual ou inferior a atual
+        Con = f"""SELECT * FROM contas WHERE ctipo = '{dc}' AND cintf = '{di}'"""
+        ConRead = pd.read_sql_query(Con, conexao)
+        rvs = pd.Series(ConRead["csaldo"]) - dv
+        comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{di}' AND ctipo='{dc}'"""        #Atualiza o saldo
+        cursor.execute(comando)
+        cursor.commit()
     Inicial()
 
 
@@ -373,8 +372,8 @@ def Lis_Des():                                             # Listar as Despesas
             print(listar)
             Inicial()
         elif lisD == 'P':
-            perI = input('Digite o período Inicial no formato 2022-01-01: ')
-            perF = input('Digite o período Final no formato 2022-01-01: ')
+            perI = input('Digite o período Inicial no formato 2022-01-31: ')
+            perF = input('Digite o período Final no formato 2022-01-31: ')
             Des = f"""SELECT * FROM despesas WHERE ddata > '{perI}' AND ddata < '{perF}' """
             listar = pd.read_sql_query(Des, conexao)
             print(listar)
@@ -545,8 +544,13 @@ def Lit_Con():                                             #Apresenta saldo tota
 
 ################## MAIN ####################
 
+hoje = str(date.today())
 Inicial()
+'''data = input()
+hoje = str(date.today())
+if hoje >= data:
+    print(str(hoje))'''
+
 
 ############################################
-
 
