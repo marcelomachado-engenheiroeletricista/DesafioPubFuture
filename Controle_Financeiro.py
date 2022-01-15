@@ -1,18 +1,18 @@
 ########## Importanto bibliotecas ##########
 
-import pyodbc               # Biblioteca OBBC para conetar ao banco de dados SQl
+import pyodbc               # Biblioteca ODBC para conetar ao banco de dados SQl
 import pandas as pd         # Biblioteca Pandas p/ ler o banco de dados
-from datetime import date
+from datetime import date   # Biblioteca para trabalhar com datas
 
 ############################################
 
 
 
-########## Fazer conexão com o DB ##########
+########## Fazer conexão com o BANCO DE DADOS ##########
 
 dados_conexao = (
     "Driver={SQL Server};"
-    "Server=LAPTOP-B00KFP26;"
+    "Server=LAPTOP-B00KFP26;"           #Alterar LAPTOP-B00KFP26 para o nome do computador que está rodando a aplciação
     "Database=PubFuture;"
 )
 
@@ -23,11 +23,43 @@ cursor = conexao.cursor()
 
 ################ Funções ###################
 
+# Criando Tabelas no Banco de dados SQL de nome: PubFuture
 
+def NewTable():
+    create = """USE PubFuture
+    CREATE TABLE receitas (
+        id int IDENTITY(1,1) PRIMARY KEY,
+        rvalor decimal(10, 2),
+        rdata date,
+        rdescrição varchar(50),
+        rtipo varchar(50),
+        rintf varchar(50),
+        rtconta varchar(50),
+        rfut boolean,
+        );
+    CREATE TABLE despesas (
+            id int IDENTITY(1,1) PRIMARY KEY,
+            dvalor decimal(10, 2),
+            ddata date,
+            ddescrição varchar(50),
+            dtipo varchar(50),
+            dintf varchar(50),
+            dtconta varchar(50),
+            dfut boolean,
+            );
+    CREATE TABLE contas (
+            id int IDENTITY(1,1) PRIMARY KEY,
+            csaldo decimal(10, 2),
+            ctipo varchar(50),
+            cintf varchar(50),
+            cfut boolean,
+            );"""
+    cursor.execute(create)
+    cursor.commit()
 
 # Função inicial
 
-def Inicial():
+def Inicial():                                                                                 #Função p/ página inicial
     print('\n############################################ Principal ############################################\n')
     exe1 = input('Contas => (C) \n'
                  'Receitas => (R) \n'
@@ -76,7 +108,7 @@ def Receitas():
             exeR = input('Inválido, tente navamente: ').upper()
 
 
-def Cad_Rec():                                             # Irá Cadastrar uma nova receita
+def Cad_Rec():                                                                          # Irá Cadastrar uma nova receita
     print('\n########################################### Nova Receita ###########################################\n')
     print('Digite a Receita')
     rv = float(input('Valor R$: '))
@@ -94,7 +126,7 @@ def Cad_Rec():                                             # Irá Cadastrar uma 
         Con = f"""SELECT * FROM contas WHERE ctipo = '{rc}' AND cintf = '{ri}'"""
         ConRead = pd.read_sql_query(Con, conexao)
         rvs = pd.Series(ConRead["csaldo"]) + rv
-        comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{ri}' AND ctipo='{rc}'"""  # Atualiza o saldo
+        comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{ri}' AND ctipo='{rc}'"""        # Atualiza o saldo
         cursor.execute(comando)
         cursor.commit()
     else:
@@ -103,13 +135,13 @@ def Cad_Rec():                                             # Irá Cadastrar uma 
                 ({rv}, '{rdr}', '{rd}', '{rt}', '{ri}', '{rc}', {1})"""
         cursor.execute(comando)
         cursor.commit()
-        comando = f"""UPDATE contas SET cfut={1} WHERE cintf='{ri}' AND ctipo='{rc}'"""  # Atualiza o saldo
+        comando = f"""UPDATE contas SET cfut={1} WHERE cintf='{ri}' AND ctipo='{rc}'"""               # Atualiza o saldo
         cursor.execute(comando)
         cursor.commit()
     Inicial()
 
 
-def Ed_Rec():                                             # Editar as receitas
+def Ed_Rec():                                                                                       # Editar as receitas
     print('\n########################################### Editar Receitas ###########################################\n')
     Rec = """SELECT * FROM receitas"""
     listar = pd.read_sql_query(Rec, conexao)
@@ -135,7 +167,7 @@ def Ed_Rec():                                             # Editar as receitas
     Inicial()
 
 
-def Rem_Rec():                                             # Remover receitas
+def Rem_Rec():                                                                                        # Remover receitas
     print('\n########################################### Remover Receitas ###########################################\n')
     while True:
         exeRR = input('Remover todas => (T) \n'
@@ -189,7 +221,7 @@ def Rem_Rec():                                             # Remover receitas
             exeRR = input('Inválido, tente navamente: ').upper()
 
 
-def Lis_Rec():                                             # Irá Listar as receitas
+def Lis_Rec():                                                                                  # Irá Listar as receitas
     print('\n########################################### Filtrar Receitas ###########################################\n')
     while True:
         lisR = input('Todas (A) \n'
@@ -231,7 +263,7 @@ def Lis_Rec():                                             # Irá Listar as rece
             lisR = input('Inválido, tente navamente: ').upper()
 
 
-def at_Rec():
+def at_Rec():                   #Verifica se existe receita a ser atualizada por conta de ser cadastrada com data futura
     atua = """SELECT * FROM receitas"""
     atRec = pd.read_sql_query(atua, conexao)
     for a in range(0, len(atRec)):
@@ -279,7 +311,7 @@ def Despesas():
             exeD = input('Inválido, tente navamente: ').upper()
 
 
-def Cad_Des():                                             # Irá Cadastrar uma nova despesa
+def Cad_Des():                                                                          # Irá Cadastrar uma nova despesa
     print('\n########################################### Nova Despesa ###########################################\n')
     print('Digite a Despesa')
     dv = float(input('Valor R$: '))
@@ -297,7 +329,7 @@ def Cad_Des():                                             # Irá Cadastrar uma 
         Con = f"""SELECT * FROM contas WHERE ctipo = '{dc}' AND cintf = '{di}'"""
         ConRead = pd.read_sql_query(Con, conexao)
         rvs = pd.Series(ConRead["csaldo"]) - dv
-        comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{di}' AND ctipo='{dc}'"""        #Atualiza o saldo
+        comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{di}' AND ctipo='{dc}'"""         #Atualiza o saldo
         cursor.execute(comando)
         cursor.commit()
     else:
@@ -312,7 +344,7 @@ def Cad_Des():                                             # Irá Cadastrar uma 
     Inicial()
 
 
-def Ed_Des():                                             # Editar  Despesas
+def Ed_Des():                                                                                         # Editar  Despesas
     print('\n########################################### Editar Despesas ###########################################\n')
     Des = """SELECT * FROM despesas"""
     listar = pd.read_sql_query(Des, conexao)
@@ -323,7 +355,7 @@ def Ed_Des():                                             # Editar  Despesas
     comando = f"""UPDATE despesas SET {esc2}={esc3} WHERE id='{esc1}'"""
     cursor.execute(comando)
     cursor.commit()
-    if esc2 == 'dvalor':  # Atualizar o saldo somente se editado valor da despesa
+    if esc2 == 'dvalor':                                         # Atualizar o saldo somente se editado valor da despesa
         varid = listar.query(f'id == {esc1}')
         varval = pd.Series(varid["dvalor"])
         varif = pd.Series(varid["dintf"])
@@ -338,7 +370,7 @@ def Ed_Des():                                             # Editar  Despesas
     Inicial()
 
 
-def Rem_Des():                                             # Remover Despesas
+def Rem_Des():                                                                                        # Remover Despesas
     print('\n########################################### Remover Despesas ###########################################\n')
     exeRD = input('Remover todas => (T) \n'
                   'Especifica => (E) \n'
@@ -392,7 +424,7 @@ def Rem_Des():                                             # Remover Despesas
         exeRD = input('Inválido, tente navamente: ').upper()
 
 
-def Lis_Des():                                             # Listar as Despesas
+def Lis_Des():                                                                                      # Listar as Despesas
     print('\n########################################### Filtrar Despesas ###########################################\n')
     while True:
         lisD = input('Todas (A) \n'
@@ -434,7 +466,7 @@ def Lis_Des():                                             # Listar as Despesas
             lisR = input('Inválido, tente navamente: ').upper()
 
 
-def at_Des():
+def at_Des():                   #Verifica se existe despesa a ser atualizada por conta de ser cadastrada com data futura
     atua = """SELECT * FROM despesas"""
     atDes = pd.read_sql_query(atua, conexao)
     for a in range(0, len(atDes)):
@@ -486,7 +518,7 @@ def Contas():
         else:
             exeC = input('Inválido, tente navamente: ').upper()
 
-def Cad_Con():                                             # Cadastrar Contas
+def Cad_Con():                                                                                        # Cadastrar Contas
     print('\n########################################### Nova Conta ###########################################\n')
     print('Digite os dados de sua Conta')
     csaldo = float(input('Valor R$: '))
@@ -501,7 +533,7 @@ def Cad_Con():                                             # Cadastrar Contas
     Inicial()
 
 
-def Ed_Con():                                             # Editar Contas
+def Ed_Con():                                                                                            # Editar Contas
     print('\n########################################### Editar Contas ###########################################\n')
     Con = """SELECT * FROM contas"""
     listar = pd.read_sql_query(Con, conexao)
@@ -515,7 +547,7 @@ def Ed_Con():                                             # Editar Contas
     Inicial()
 
 
-def Rem_Con():                                             # Remover Contas
+def Rem_Con():                                                                                          # Remover Contas
     print('\n########################################### Remover Contas ###########################################\n')
     while True:
         exeRC = input('Remover todas => (T) \n'
@@ -538,7 +570,6 @@ def Rem_Con():                                             # Remover Contas
             cursor.execute(escolher)
             cursor.commit()
             Inicial()
-            # NÃO ESQUECER DE ATUALIZAR O SALDO
         elif exeRC == 'V':
             Contas()
         elif exeRC == 'S':
@@ -547,7 +578,7 @@ def Rem_Con():                                             # Remover Contas
             exeRD = input('Inválido, tente navamente: ').upper()
 
 
-def Lis_Con():                                             # Irá Listar as Contas
+def Lis_Con():                                                                                    # Irá Listar as Contas
     print('\n########################################### Filtrar Contas ###########################################\n')
     Con = """SELECT * FROM contas"""
     listar = pd.read_sql_query(Con, conexao)
@@ -555,7 +586,7 @@ def Lis_Con():                                             # Irá Listar as Cont
     Inicial()
 
 
-def Tra_Con():                                             # Transferir saldo entre contas
+def Tra_Con():                                                                           # Transferir saldo entre contas
     print('\n####################################### Transferência de Saldo #######################################\n')
     Con = f"""SELECT * FROM contas"""
     ConRead = pd.read_sql_query(Con, conexao)
@@ -581,7 +612,7 @@ def Tra_Con():                                             # Transferir saldo en
     Inicial()
 
 
-def Lit_Con():                                             #Apresenta saldo total
+def Lit_Con():                                                                                    #Apresenta saldo total
     print('\n############################################ Saldo ############################################\n')
 
     Con = f"""SELECT SUM(csaldo) from contas"""
@@ -597,10 +628,10 @@ def Lit_Con():                                             #Apresenta saldo tota
 
 ################## MAIN ####################
 
+NewTable()          # Chamar esta função somente na primeira vez que rodar essa aplicação. Após a primeira aplicação, comentar linhaexiste
 hoje = str(date.today())
 
-
-Con = """SELECT * FROM contas"""        #Coferir se a valor "futuro" a atualizar
+Con = """SELECT * FROM contas"""                                                #Coferir se a valor "futuro" a atualizar
 contas = pd.read_sql_query(Con, conexao)
 for a in range(0, len(contas)):
     fut = contas.loc[a]
@@ -616,21 +647,17 @@ if at == True:
     Rec = """SELECT COUNT(*) FROM receitas WHERE rfut=1;"""
     RecFut = pd.read_sql_query(Rec, conexao)
     rec = pd.Series(RecFut[""])
-    ind = RecFut.index
+    indr = RecFut.index
     Des = """SELECT COUNT(*) FROM despesas WHERE dfut=1;"""
     DesFut = pd.read_sql_query(Des, conexao)
     des = pd.Series(DesFut[""])
-    ind = DesFut.index
-    if des[ind[0]]==0 and rec[ind[0]]==0:
+    indd = DesFut.index
+    if des[indd[0]]==0 and rec[indr[0]]==0:
         con = f"""UPDATE contas SET cfut={0}"""
     cursor.execute(Con)
     cursor.commit()
+
 Inicial()
 
 
-
-
-
-
 ############################################
-
