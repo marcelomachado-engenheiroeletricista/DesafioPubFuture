@@ -24,6 +24,7 @@ cursor = conexao.cursor()
 ################ Funções ###################
 
 
+
 # Função inicial
 
 def Inicial():
@@ -84,16 +85,25 @@ def Cad_Rec():                                             # Irá Cadastrar uma 
     rt = str(input('Tipo de Receita: ').upper())
     ri = str(input('Instituição financeira: ').upper())
     rc = str(input('Tipo de conta: ').upper())
-    comando = f"""INSERT INTO receitas(rvalor, rdata, rdescrição, rtipo, rintf, rtconta)
-    VALUES
-        ({rv}, '{rdr}', '{rd}', '{rt}', '{ri}', '{rc}')"""
-    cursor.execute(comando)
-    cursor.commit()
-    if hoje >= rdr:                                                    #Somente atualiza saldo se data da receita for igual ou inferior a atual
+    if hoje >= rdr:                            # Somente atualiza saldo se data da receita for igual ou inferior a atual
+        comando = f"""INSERT INTO receitas(rvalor, rdata, rdescrição, rtipo, rintf, rtconta)
+            VALUES
+                ({rv}, '{rdr}', '{rd}', '{rt}', '{ri}', '{rc}')"""
+        cursor.execute(comando)
+        cursor.commit()
         Con = f"""SELECT * FROM contas WHERE ctipo = '{rc}' AND cintf = '{ri}'"""
         ConRead = pd.read_sql_query(Con, conexao)
         rvs = pd.Series(ConRead["csaldo"]) + rv
-        comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{ri}' AND ctipo='{rc}'"""        #Atualiza o saldo
+        comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{ri}' AND ctipo='{rc}'"""  # Atualiza o saldo
+        cursor.execute(comando)
+        cursor.commit()
+    else:
+        comando = f"""INSERT INTO receitas(rvalor, rdata, rdescrição, rtipo, rintf, rtconta, rfut)
+            VALUES
+                ({rv}, '{rdr}', '{rd}', '{rt}', '{ri}', '{rc}', {1})"""
+        cursor.execute(comando)
+        cursor.commit()
+        comando = f"""UPDATE contas SET cfut={1} WHERE cintf='{ri}' AND ctipo='{rc}'"""  # Atualiza o saldo
         cursor.execute(comando)
         cursor.commit()
     Inicial()
@@ -221,6 +231,23 @@ def Lis_Rec():                                             # Irá Listar as rece
             lisR = input('Inválido, tente navamente: ').upper()
 
 
+def at_Rec():
+    atua = """SELECT * FROM receitas"""
+    atRec = pd.read_sql_query(atua, conexao)
+    for a in range(0, len(atRec)):
+        fut = atRec.loc[a]
+        if fut["rfut"] == True:
+            if hoje >= fut["rdata"]:
+                Con = f"""SELECT * FROM contas WHERE ctipo = '{fut["rtconta"]}' AND cintf = '{fut["rintf"]}'"""
+                ConRead = pd.read_sql_query(Con, conexao)
+                rvs = pd.Series(ConRead["csaldo"]) + fut["rvalor"]
+                comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE ctipo = '{fut["rtconta"]}' AND cintf = '{fut["rintf"]}' """  # Atualiza o saldo
+                cursor.execute(comando)
+                cursor.commit()
+                comando = f"""UPDATE receitas SET rfut={0} WHERE id = '{fut["id"]}' """  # Atualiza o saldo
+                cursor.execute(comando)
+                cursor.commit()
+
 
 # Funções referentes as Despesas
 
@@ -261,16 +288,25 @@ def Cad_Des():                                             # Irá Cadastrar uma 
     dt = str(input('Tipo de Despesa: ').upper())
     di = str(input('Instituição financeira: ').upper())
     dc = str(input('Tipo de conta: ').upper())
-    comando = f"""INSERT INTO despesas(dvalor, ddata, ddescrição, dtipo, dintf, dtconta)
-    VALUES
-        ({dv}, '{ddr}', '{dd}', '{dt}', '{di}', '{dc}')"""
-    cursor.execute(comando)
-    cursor.commit()
     if hoje >= ddr:                            # Somente atualiza saldo se data da despesa for igual ou inferior a atual
+        comando = f"""INSERT INTO despesas(dvalor, ddata, ddescrição, dtipo, dintf, dtconta)
+            VALUES
+                ({dv}, '{ddr}', '{dd}', '{dt}', '{di}', '{dc}')"""
+        cursor.execute(comando)
+        cursor.commit()
         Con = f"""SELECT * FROM contas WHERE ctipo = '{dc}' AND cintf = '{di}'"""
         ConRead = pd.read_sql_query(Con, conexao)
         rvs = pd.Series(ConRead["csaldo"]) - dv
         comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{di}' AND ctipo='{dc}'"""        #Atualiza o saldo
+        cursor.execute(comando)
+        cursor.commit()
+    else:
+        comando = f"""INSERT INTO despesas(dvalor, ddata, ddescrição, dtipo, dintf, dtconta, dfut)
+                    VALUES
+                        ({dv}, '{ddr}', '{dd}', '{dt}', '{di}', '{dc}', {1})"""
+        cursor.execute(comando)
+        cursor.commit()
+        comando = f"""UPDATE contas SET cfut={1} WHERE cintf='{di}' AND ctipo='{dc}'"""
         cursor.execute(comando)
         cursor.commit()
     Inicial()
@@ -397,6 +433,23 @@ def Lis_Des():                                             # Listar as Despesas
         else:
             lisR = input('Inválido, tente navamente: ').upper()
 
+
+def at_Des():
+    atua = """SELECT * FROM despesas"""
+    atDes = pd.read_sql_query(atua, conexao)
+    for a in range(0, len(atDes)):
+        fut = atDes.loc[a]
+        if fut["dfut"] == True:
+            if hoje >= fut["ddata"]:
+                Con = f"""SELECT * FROM contas WHERE ctipo = '{fut["dtconta"]}' AND cintf = '{fut["dintf"]}'"""
+                ConRead = pd.read_sql_query(Con, conexao)
+                rvs = pd.Series(ConRead["csaldo"]) - fut["dvalor"]
+                comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE ctipo = '{fut["dtconta"]}' AND cintf = '{fut["dintf"]}' """  # Atualiza o saldo
+                cursor.execute(comando)
+                cursor.commit()
+                comando = f"""UPDATE receitas SET dfut={0} WHERE id = '{fut["id"]}' """  # Atualiza o saldo
+                cursor.execute(comando)
+                cursor.commit()
 
 
 # Funções referentes as Contas
@@ -545,11 +598,38 @@ def Lit_Con():                                             #Apresenta saldo tota
 ################## MAIN ####################
 
 hoje = str(date.today())
+
+
+Con = """SELECT * FROM contas"""        #Coferir se a valor "futuro" a atualizar
+contas = pd.read_sql_query(Con, conexao)
+for a in range(0, len(contas)):
+    fut = contas.loc[a]
+    if fut["cfut"] == True:
+    at = True
+
+if at == True:
+    for a in range(0, 1):
+        if a == 0:
+            at_Rec()
+        else:
+            at_Des()
+    Rec = """SELECT COUNT(*) FROM receitas WHERE rfut=1;"""
+    RecFut = pd.read_sql_query(Rec, conexao)
+    rec = pd.Series(RecFut[""])
+    ind = RecFut.index
+    Des = """SELECT COUNT(*) FROM despesas WHERE dfut=1;"""
+    DesFut = pd.read_sql_query(Des, conexao)
+    des = pd.Series(DesFut[""])
+    ind = DesFut.index
+    if des[ind[0]]==0 and rec[ind[0]]==0:
+        con = f"""UPDATE contas SET cfut={0}"""
+    cursor.execute(Con)
+    cursor.commit()
 Inicial()
-'''data = input()
-hoje = str(date.today())
-if hoje >= data:
-    print(str(hoje))'''
+
+
+
+
 
 
 ############################################
