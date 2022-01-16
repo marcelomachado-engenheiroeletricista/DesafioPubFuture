@@ -35,7 +35,7 @@ def NewTable():
         rtipo varchar(50),
         rintf varchar(50),
         rtconta varchar(50),
-        rfut boolean,
+        rfut bit,
         );
     CREATE TABLE despesas (
             id int IDENTITY(1,1) PRIMARY KEY,
@@ -45,14 +45,14 @@ def NewTable():
             dtipo varchar(50),
             dintf varchar(50),
             dtconta varchar(50),
-            dfut boolean,
+            dfut bit,
             );
     CREATE TABLE contas (
             id int IDENTITY(1,1) PRIMARY KEY,
             csaldo decimal(10, 2),
             ctipo varchar(50),
             cintf varchar(50),
-            cfut boolean,
+            cfut bit,
             );"""
     cursor.execute(create)
     cursor.commit()
@@ -149,10 +149,7 @@ def Ed_Rec():                                                                   
     esc1 = int(input('Digite o id da receita a ser editada: '))
     esc2 = str(input('Digite o campo que deseja editar: ')).lower()
     esc3 = input('Digite o novo valor: ')
-    comando = f"""UPDATE receitas SET {esc2}={esc3} WHERE id={esc1}"""
-    cursor.execute(comando)
-    cursor.commit()
-    if esc2 == 'rvalor':  # Atualizar o saldo somente se editado valor da receita
+    if esc2 == 'rvalor':                                         # Atualizar o saldo somente se editado valor da receita
         varid = listar.query(f'id == {esc1}')
         varval = pd.Series(varid["rvalor"])
         varif = pd.Series(varid["rintf"])
@@ -162,6 +159,13 @@ def Ed_Rec():                                                                   
         ConRead = pd.read_sql_query(Con, conexao)
         rvs = (pd.Series(ConRead["csaldo"]) - varval[ind[0]]) + int(esc3)
         comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{varif[ind[0]]}' AND ctipo='{vartc[ind[0]]}'"""  # Atualiza o saldo
+        cursor.execute(comando)
+        cursor.commit()
+        comando = f"""UPDATE receitas SET {esc2}={esc3} WHERE id={esc1}"""
+        cursor.execute(comando)
+        cursor.commit()
+    else:
+        comando = f"""UPDATE receitas SET {esc2}='{esc3}' WHERE id={esc1}"""
         cursor.execute(comando)
         cursor.commit()
     Inicial()
@@ -352,9 +356,6 @@ def Ed_Des():                                                                   
     esc1 = int(input('Digite o id da despesa ser editada: '))
     esc2 = str(input('Digite o campo que deseja editar: ')).lower()
     esc3 = input('Digite o novo valor: ')
-    comando = f"""UPDATE despesas SET {esc2}={esc3} WHERE id='{esc1}'"""
-    cursor.execute(comando)
-    cursor.commit()
     if esc2 == 'dvalor':                                         # Atualizar o saldo somente se editado valor da despesa
         varid = listar.query(f'id == {esc1}')
         varval = pd.Series(varid["dvalor"])
@@ -365,6 +366,13 @@ def Ed_Des():                                                                   
         ConRead = pd.read_sql_query(Con, conexao)
         rvs = (pd.Series(ConRead["csaldo"]) + varval[ind[0]]) - int(esc3)
         comando = f"""UPDATE contas SET csaldo={rvs[0]} WHERE cintf='{varif[ind[0]]}' AND ctipo='{vartc[ind[0]]}'"""  # Atualiza o saldo
+        cursor.execute(comando)
+        cursor.commit()
+        comando = f"""UPDATE despesas SET {esc2}={esc3} WHERE id='{esc1}'"""
+        cursor.execute(comando)
+        cursor.commit()
+    else:
+        comando = f"""UPDATE despesas SET {esc2}='{esc3}' WHERE id='{esc1}'"""
         cursor.execute(comando)
         cursor.commit()
     Inicial()
@@ -633,10 +641,11 @@ hoje = str(date.today())
 
 Con = """SELECT * FROM contas"""                                                #Coferir se a valor "futuro" a atualizar
 contas = pd.read_sql_query(Con, conexao)
+at = False
 for a in range(0, len(contas)):
     fut = contas.loc[a]
     if fut["cfut"] == True:
-    at = True
+        at = True
 
 if at == True:
     for a in range(0, 1):

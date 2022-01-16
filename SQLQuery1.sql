@@ -1,8 +1,5 @@
 USE PubFuture
 
-
-
-
-SELECT * from receitas
-SELECT * from contas
-SELECT * from despesas
+SELECT * FROM contas
+SELECT * FROM receitas
+SELECT * FROM despesas
